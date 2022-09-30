@@ -2,7 +2,9 @@ export interface DeviceType {
   fan: boolean
   curtain: boolean
   humidifier: boolean
+  lamp: boolean,
   access: boolean
+  buzzer: boolean
 }
 
 export interface DeviceMatchType {
@@ -31,23 +33,28 @@ export const DeviceMatchSend = {
   fan:1,
   curtain:2,
   humidifier:3,
-  access:4
+  lamp:4,
+  access:5,
+  buzzer:6
 }
 
 export const DEVICE = {
   fan: '风扇',
   curtain: '窗帘',
   humidifier: '加湿器',
+  lamp: '射灯',
   access: '门禁',
+  buzzer: '蜂鸣器',
 }
 
 export const DEVICE_AGAINST = {
   风扇: 'fan',
   窗帘: 'curtain',
   加湿器: 'humidifier',
+  射灯: 'lamp',
   门禁: 'access',
 }
-export const esp32_JDQ = 'esp32_JDQ'
+export const esp32_JDQ = 'esp32_switch'
 
 export interface SensorType {
   MQTT_PUB_TEMP: SensorItemType

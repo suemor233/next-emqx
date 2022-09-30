@@ -22,7 +22,9 @@ export default class DeviceStore {
     fan: false,
     curtain: false,
     humidifier: false,
+    lamp: false,
     access: false,
+    buzzer: false,
   }
 
   sensor: SensorType = {
@@ -65,7 +67,11 @@ export default class DeviceStore {
   linkage = {
     sensor: '温度',
     condition: '>',
-    value: '',
+    value: {
+      inputValue: '',
+      gasValue: '安全',
+      humanValue: '无人',
+    },
     state: '开',
     device: '风扇',
     launch: false,
@@ -146,24 +152,37 @@ export default class DeviceStore {
   }
 
   leaveHomeMode() {
-    this.linkage.launch = false
     this.client?.publish(esp32_JDQ, '20')
+    this.linkage.launch = false
     this.device.fan = false
     this.device.curtain = false
     this.device.humidifier = false
     this.device.access = false
+    this.device.lamp = false
+    this.device.buzzer = false
   }
 
   startLinkage() {
     clearInterval(this.setInsterval)
     this.setInsterval = setInterval(() => {
-      const { sensor, condition, value, state, device, launch } = this.linkage
+      const {
+        sensor,
+        condition,
+        value: { inputValue, gasValue, humanValue },
+        state,
+        device,
+        launch,
+      } = this.linkage
       if (launch) {
         const _sensor = this.sensor[LinkageMap[sensor]].value
         const _device = DEVICE_AGAINST[device]
-        if (condition === '>' && Number(_sensor) > Number(value)) {
+        if (sensor === '人体红外' && _sensor === humanValue) {
           this.controlDevice(_device, state)
-        } else if (condition === '<' && Number(_sensor) < Number(value)) {
+        } else if (sensor === '燃气' && _sensor === gasValue) {
+          this.controlDevice(_device, state)
+        } else if (condition === '>' && Number(_sensor) > Number(inputValue)) {
+          this.controlDevice(_device, state)
+        } else if (condition === '<' && Number(_sensor) < Number(inputValue)) {
           this.controlDevice(_device, state)
         }
       } else {
@@ -181,6 +200,6 @@ export default class DeviceStore {
         : `${DeviceMatchSend[device] + 10}`,
     )
     this.device[device] = state === '开'
-    console.log('start');
+    console.log('start')
   }
 }

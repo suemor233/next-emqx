@@ -4,7 +4,7 @@ import { m } from 'framer-motion'
 import type { FC, PropsWithChildren } from 'react'
 
 import styles from './index.module.css'
-import {Setting } from './setting'
+import { Setting } from './setting'
 
 export const backdropMotion: Variants = {
   exit: {
@@ -31,7 +31,7 @@ const HomeLayout: FC<PropsWithChildren> = ({ children }) => {
     >
       <Setting />
       <m.div
-        className="gap-7 max-w-[45rem] flex flex-col m-5 flex-[4]"
+        className="gap-7 max-w-[65rem] flex flex-col m-5 flex-[4]"
         variants={backdropMotion}
         initial="exit"
         animate="enter"

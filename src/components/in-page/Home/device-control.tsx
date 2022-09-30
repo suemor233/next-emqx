@@ -8,7 +8,7 @@ const DeviceControl = () => {
   return (
     <div>
       <h1 className="font-ui text-4xl font-medium select-none">设备控制</h1>
-      <div className="grid mt-3 grid-cols-4">
+      <div className="grid mt-3 grid-cols-6 phone:grid-cols-3">
         {deviceStore.getDeviceName().map((item) => (
           <DeviceItem
             key={item?.name}
