@@ -59,7 +59,7 @@ export default class DeviceStore {
   }
 
   client: MqttClient | null = null
-
+  setInsterval
   mode = 'home'
 
   linkage = {
@@ -146,6 +146,7 @@ export default class DeviceStore {
   }
 
   leaveHomeMode() {
+    this.linkage.launch = false
     this.client?.publish(esp32_JDQ, '20')
     this.device.fan = false
     this.device.curtain = false
@@ -154,24 +155,32 @@ export default class DeviceStore {
   }
 
   startLinkage() {
-    const { sensor, condition, value, state, device } = this.linkage
-    const _sensor = this.sensor[LinkageMap[sensor]].value
-    const _device = DEVICE_AGAINST[device]
-    if (condition === '>' && Number(_sensor) > Number(value)) {
-      this.controlDevice(_device, state)
-    } else if (condition === '<' && Number(_sensor) < Number(value)) {
-      this.controlDevice(_device, state)
-    }
+    clearInterval(this.setInsterval)
+    this.setInsterval = setInterval(() => {
+      const { sensor, condition, value, state, device, launch } = this.linkage
+      if (launch) {
+        const _sensor = this.sensor[LinkageMap[sensor]].value
+        const _device = DEVICE_AGAINST[device]
+        if (condition === '>' && Number(_sensor) > Number(value)) {
+          this.controlDevice(_device, state)
+        } else if (condition === '<' && Number(_sensor) < Number(value)) {
+          this.controlDevice(_device, state)
+        }
+      } else {
+        clearInterval(this.setInsterval)
+      }
+    }, 1000)
   }
 
   controlDevice(device: number, state: string) {
-      this.client?.publish(
-        esp32_JDQ,
-        state === '开'
-          ? `${DeviceMatchSend[device]}`
-          : `${DeviceMatchSend[device] + 10}`,
-      )
-      this.device[device] = state === '开'
-
+    this.mode = 'home'
+    this.client?.publish(
+      esp32_JDQ,
+      state === '开'
+        ? `${DeviceMatchSend[device]}`
+        : `${DeviceMatchSend[device] + 10}`,
+    )
+    this.device[device] = state === '开'
+    console.log('start');
   }
 }
