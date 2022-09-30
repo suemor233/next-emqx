@@ -7,8 +7,8 @@ const DeviceControl = () => {
   const { deviceStore } = useStore()
   return (
     <div>
-      <h1 className="font-ui text-4xl font-medium">设备控制</h1>
-      <div className="flex gap-8 mt-3 justify-between">
+      <h1 className="font-ui text-4xl font-medium select-none">设备控制</h1>
+      <div className="grid mt-3 grid-cols-4">
         {deviceStore.getDeviceName().map((item) => (
           <DeviceItem
             key={item?.name}
@@ -30,7 +30,7 @@ interface itemDeviceType {
 const DeviceItem: FC<itemDeviceType> = ({ name, status, icon }) => {
   const { deviceStore } = useStore()
   return (
-    <div className="flex flex-col ">
+    <div className="flex flex-col items-center">
       <div
         className={`w-30 h-30 rounded-full bg-white ${
           !status && 'opacity-40'

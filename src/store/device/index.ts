@@ -1,25 +1,22 @@
-import { makeAutoObservable } from 'mobx'
+import { findKey } from 'lodash-es'
+import { makeAutoObservable, reaction } from 'mobx'
 import type { MqttClient } from 'mqtt'
 import mqtt from 'mqtt'
 import { v4 as uuidv4 } from 'uuid'
 
 import { isClientSide } from '~/utils/env'
 
-import { SensorType, esp32_JDQ } from './type'
-import { MQTT } from './type'
+import {
+  DEVICE,
+  DEVICE_AGAINST,
+  DeviceMatchSend,
+  DeviceMatchType,
+  DeviceType,
+  LinkageMap,
+  SensorType,
+} from './type'
+import { MQTT, esp32_JDQ } from './type'
 
-interface DeviceType {
-  fan: boolean
-  curtain: boolean
-  humidifier: boolean
-  access: boolean
-}
-
-interface DeviceMatchType {
-  name: string
-  status: boolean
-  icon: string
-}
 export default class DeviceStore {
   device: Partial<DeviceType> = {
     fan: false,
@@ -62,6 +59,17 @@ export default class DeviceStore {
   }
 
   client: MqttClient | null = null
+
+  mode = 'home'
+
+  linkage = {
+    sensor: '温度',
+    condition: '>',
+    value: '',
+    state: '开',
+    device: '风扇',
+    launch: false,
+  }
 
   constructor() {
     makeAutoObservable(this)
@@ -118,25 +126,52 @@ export default class DeviceStore {
   }
 
   changeDeviceStatus(name: string) {
-    console.log(name)
-    if (name === 'fan') {
-      this.client?.publish(esp32_JDQ, this.device.fan ? '11' : '1')
-    } else if (name === 'curtain') {
-      this.client?.publish(esp32_JDQ, this.device.curtain ? '12' : '2')
-    } else if (name === 'humidifier') {
-      this.client?.publish(esp32_JDQ, this.device.humidifier ? '13' : '3')
-    } else if (name === 'access') {
-      this.client?.publish(esp32_JDQ, this.device.access ? '14' : '4')
-    }
+    this.client?.publish(
+      esp32_JDQ,
+      !this.device[name]
+        ? `${DeviceMatchSend[name]}`
+        : `${DeviceMatchSend[name] + 10}`,
+    )
     this.device[name] = !this.device[name]
+    if (this.mode === 'leave') {
+      this.changeMode('home')
+    }
+  }
+
+  changeMode(name: string) {
+    this.mode = name
+    if (name === 'leave') {
+      this.leaveHomeMode()
+    }
   }
 
   leaveHomeMode() {
     this.client?.publish(esp32_JDQ, '20')
-
     this.device.fan = false
     this.device.curtain = false
     this.device.humidifier = false
     this.device.access = false
+  }
+
+  startLinkage() {
+    const { sensor, condition, value, state, device } = this.linkage
+    const _sensor = this.sensor[LinkageMap[sensor]].value
+    const _device = DEVICE_AGAINST[device]
+    if (condition === '>' && Number(_sensor) > Number(value)) {
+      this.controlDevice(_device, state)
+    } else if (condition === '<' && Number(_sensor) < Number(value)) {
+      this.controlDevice(_device, state)
+    }
+  }
+
+  controlDevice(device: number, state: string) {
+      this.client?.publish(
+        esp32_JDQ,
+        state === '开'
+          ? `${DeviceMatchSend[device]}`
+          : `${DeviceMatchSend[device] + 10}`,
+      )
+      this.device[device] = state === '开'
+
   }
 }

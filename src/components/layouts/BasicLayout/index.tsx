@@ -1,3 +1,4 @@
+import { domMax, LazyMotion } from 'framer-motion'
 import type { FC, PropsWithChildren } from 'react'
 import { useEffect } from 'react'
 
@@ -14,7 +15,9 @@ const BasicLayout: FC<PropsWithChildren> = ({ children }) => {
   }, [])
   return (
     <NextUIProvider>
-      <main className="min-h-screen">{children}</main>
+      <LazyMotion strict features={domMax}>
+        <main className="min-h-screen">{children}</main>
+      </LazyMotion>
     </NextUIProvider>
   )
 }

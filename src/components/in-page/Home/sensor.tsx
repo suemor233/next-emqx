@@ -1,7 +1,7 @@
 import { observer } from 'mobx-react-lite'
-import { FC } from 'react'
+import type { FC } from 'react'
 
-import { MQTT, SensorItemType } from '~/store/device/type'
+import type { SensorItemType } from '~/store/device/type';
 
 import { useStore } from '../../../store/index'
 
@@ -10,9 +10,9 @@ const Sensor = observer(() => {
 
   return (
     <div>
-      <h1 className="font-ui text-4xl font-medium">传感器</h1>
+      <h1 className="font-ui text-4xl font-medium select-none">传感器</h1>
       <div className="mt-3">
-        <div className="flex gap-7">
+        <div className="grid grid-cols-4 gap-10">
           {Object.keys(deviceStore.sensor).map((key) => (
             <SensorItem
               key={key}

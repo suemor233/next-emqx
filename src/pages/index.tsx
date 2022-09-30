@@ -1,8 +1,6 @@
-import type { IClientOptions, MqttClient } from 'mqtt'
-import mqtt from 'mqtt'
 import type { NextPage } from 'next'
 import { useRouter } from 'next/router'
-import React, { useEffect, useState } from 'react'
+import React, { useEffect } from 'react'
 
 import DeviceControl from '~/components/in-page/Home/device-control'
 import Mode from '~/components/in-page/Home/mode'

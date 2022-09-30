@@ -2,7 +2,7 @@ module.exports = {
   apps: [
     {
       name: 'smart-home',
-      script: 'npx next start -p 5463',
+      script: 'npx next start -p 5163',
       instances: 1,
       autorestart: true,
       watch: false,
