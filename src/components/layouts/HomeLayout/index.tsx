@@ -2,11 +2,9 @@ import { clsx } from 'clsx'
 import type { Variants } from 'framer-motion'
 import { m } from 'framer-motion'
 import type { FC, PropsWithChildren } from 'react'
-import { useState } from 'react'
-import { IoSettingsOutline } from 'react-icons/io5'
 
 import styles from './index.module.css'
-import { LinkageModel, Setting } from './setting'
+import {Setting } from './setting'
 
 export const backdropMotion: Variants = {
   exit: {
