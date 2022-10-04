@@ -26,12 +26,12 @@ const HomeLayout: FC<PropsWithChildren> = ({ children }) => {
     <div
       className={clsx(
         styles.bg,
-        'h-screen flex justify-center items-center flex-col text-white relative',
+        'h-screen phone:h-full flex justify-center items-center flex-col text-white relative',
       )}
     >
       <Setting />
       <m.div
-        className="gap-7 max-w-[65rem] flex flex-col m-5 flex-[4]"
+        className="gap-7 max-w-[65rem] phone:max-w-[32rem] flex flex-col m-5 flex-[4] justify-center"
         variants={backdropMotion}
         initial="exit"
         animate="enter"

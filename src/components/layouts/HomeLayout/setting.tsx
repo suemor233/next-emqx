@@ -1,8 +1,13 @@
-import { Variants, m } from 'framer-motion'
+import type { Variants } from 'framer-motion'
+import { m } from 'framer-motion'
 import { observer } from 'mobx-react-lite'
 import { useRouter } from 'next/router'
 import { memo, useState } from 'react'
-import { IoSettingsOutline } from 'react-icons/io5'
+import {
+  IoAddOutline,
+  IoRemoveOutline,
+  IoSettingsOutline,
+} from 'react-icons/io5'
 import { message } from 'react-message-popup'
 
 import {
@@ -14,6 +19,7 @@ import {
   Text,
 } from '@nextui-org/react'
 
+import type { LinkageType } from '~/store/device/type';
 import { DEVICE } from '~/store/device/type'
 
 import { useStore } from '../../../store/index'
@@ -60,7 +66,7 @@ export const Setting = memo(() => {
         open={visible}
         preventClose={true}
         onClose={closeHandler}
-        width={'450px'}
+        width={'550px'}
       >
         <Modal.Header>
           <Text h3>联动设置</Text>
@@ -76,7 +82,7 @@ export const Setting = memo(() => {
         </Modal.Footer>
       </Modal>
 
-      <div className="absolute right-5 top-5 cursor-pointer flex justify-center items-center">
+      <div className="absolute right-5 top-5 phone:right-1 phone:top-1 cursor-pointer flex justify-center items-center">
         <Dropdown placement="bottom-left">
           <Dropdown.Trigger>
             <m.div
@@ -117,39 +123,48 @@ const LinkageBodyArray = ['温度', '湿度', '光照', '燃气', '人体红外'
 
 const LinkageBody = observer(() => {
   const { deviceStore } = useStore()
+  return (
+    <div className='flex flex-col gap-4'>
+      {deviceStore.linkage.map((item,index) => (
+        <LinkageItem key={index} linkage={item} index={index}/>
+      ))}
+    </div>
+  )
+})
+
+const LinkageItem = observer(({linkage,index}:{linkage:LinkageType,index:number}) => {
+  const {deviceStore} = useStore()
   const currentLinkValue = () => {
     const current =
-      deviceStore.linkage.sensor === '燃气'
+      linkage.sensor === '燃气'
         ? ['安全', '危险']
         : ['无人', '有人']
-    console.log(current)
     return current
   }
-
   return (
-    <div className="flex gap-2">
-      <Checkbox.Group
-        value={deviceStore.linkage.launch ? ['open'] : []}
+    <div className="flex gap-2 items-center">
+     <Checkbox.Group
+        value={linkage.launch ? ['open'] : []}
         className="flex items-center justify-center"
       >
         <Checkbox
           value="open"
           size="lg"
-          onChange={(e: boolean) => (deviceStore.linkage.launch = e)}
+          onChange={(e: boolean) => (linkage.launch = e)}
         />
       </Checkbox.Group>
 
       <Dropdown>
         <Dropdown.Button flat css={{ tt: 'capitalize' }}>
-          {deviceStore.linkage.sensor}
+          {linkage.sensor}
         </Dropdown.Button>
         <Dropdown.Menu
           aria-label="Single selection actions"
           disallowEmptySelection
           selectionMode="single"
-          selectedKeys={deviceStore.linkage.sensor}
+          selectedKeys={linkage.sensor}
           onSelectionChange={(key: any) => {
-            deviceStore.linkage.sensor = key.anchorKey
+            linkage.sensor = key.anchorKey
           }}
         >
           {LinkageBodyArray.map((item) => (
@@ -158,27 +173,27 @@ const LinkageBody = observer(() => {
         </Dropdown.Menu>
       </Dropdown>
 
-      {deviceStore.linkage.sensor === '燃气' ||
-      deviceStore.linkage.sensor === '人体红外' ? (
+      {linkage.sensor === '燃气' ||
+     linkage.sensor === '人体红外' ? (
         <Dropdown>
-          <Dropdown.Button flat css={{ tt: 'capitalize' }} >
-            {deviceStore.linkage.sensor === '燃气'
-              ? deviceStore.linkage.value.gasValue
-              : deviceStore.linkage.value.humanValue}
+          <Dropdown.Button flat css={{ tt: 'capitalize' }}>
+            {linkage.sensor === '燃气'
+              ? linkage.value.gasValue
+              : linkage.value.humanValue}
           </Dropdown.Button>
           <Dropdown.Menu
             aria-label="Single selection actions"
             disallowEmptySelection
             selectionMode="single"
             selectedKeys={
-              deviceStore.linkage.sensor === '燃气'
-                ? deviceStore.linkage.value.gasValue
-                : deviceStore.linkage.value.humanValue
+              linkage.sensor === '燃气'
+                ? linkage.value.gasValue
+                : linkage.value.humanValue
             }
             onSelectionChange={(key: any) =>
-              deviceStore.linkage.sensor === '燃气'
-                ? (deviceStore.linkage.value.gasValue = key.anchorKey)
-                : (deviceStore.linkage.value.humanValue = key.anchorKey)
+              linkage.sensor === '燃气'
+                ? (linkage.value.gasValue = key.anchorKey)
+                : (linkage.value.humanValue = key.anchorKey)
             }
           >
             {currentLinkValue().map((item) => (
@@ -190,15 +205,15 @@ const LinkageBody = observer(() => {
         <>
           <Dropdown>
             <Dropdown.Button flat css={{ tt: 'capitalize' }}>
-              {deviceStore.linkage.condition}
+              {linkage.condition}
             </Dropdown.Button>
             <Dropdown.Menu
               aria-label="Single selection actions"
               disallowEmptySelection
               selectionMode="single"
-              selectedKeys={deviceStore.linkage.condition}
+              selectedKeys={linkage.condition}
               onSelectionChange={(key: any) =>
-                (deviceStore.linkage.condition = key.anchorKey)
+                (linkage.condition = key.anchorKey)
               }
             >
               <Dropdown.Item key={'>'}>大于</Dropdown.Item>
@@ -209,9 +224,9 @@ const LinkageBody = observer(() => {
           <Input
             width="52px"
             placeholder="多少"
-            value={deviceStore.linkage.value.inputValue}
+            value={linkage.value.inputValue}
             onChange={(e) =>
-              (deviceStore.linkage.value.inputValue = e.target.value)
+              (linkage.value.inputValue = e.target.value)
             }
           />
         </>
@@ -219,15 +234,15 @@ const LinkageBody = observer(() => {
 
       <Dropdown>
         <Dropdown.Button flat css={{ tt: 'capitalize' }}>
-          {deviceStore.linkage.state}
+          {linkage.state}
         </Dropdown.Button>
         <Dropdown.Menu
           aria-label="Single selection actions"
           disallowEmptySelection
           selectionMode="single"
-          selectedKeys={deviceStore.linkage.state}
+          selectedKeys={linkage.state}
           onSelectionChange={(key: any) =>
-            (deviceStore.linkage.state = key.anchorKey)
+            (linkage.state = key.anchorKey)
           }
         >
           <Dropdown.Item key={'开'}>开</Dropdown.Item>
@@ -237,22 +252,31 @@ const LinkageBody = observer(() => {
 
       <Dropdown>
         <Dropdown.Button flat css={{ tt: 'capitalize' }}>
-          {deviceStore.linkage.device}
+          {linkage.device}
         </Dropdown.Button>
         <Dropdown.Menu
           aria-label="Single selection actions"
           disallowEmptySelection
           selectionMode="single"
-          selectedKeys={deviceStore.linkage.device}
+          selectedKeys={linkage.device}
           onSelectionChange={(key: any) =>
-            (deviceStore.linkage.device = key.anchorKey)
+            (linkage.device = key.anchorKey)
           }
         >
-          {Object.keys(DEVICE).map((key) => (
+          {Object.keys(DEVICE).map((key,index) => (
             <Dropdown.Item key={DEVICE[key]}>{DEVICE[key]}</Dropdown.Item>
           ))}
+          
         </Dropdown.Menu>
       </Dropdown>
+      <Button.Group size='sm' rounded >
+         <Button css={{padding:'10px',height:'30px'}} onClick={()=>deviceStore.reduceLinkage(index)}>
+          <IoRemoveOutline />
+        </Button>
+        <Button css={{padding:'10px',height:'30px'}} onClick={()=>deviceStore.addLinkage()}>
+          <IoAddOutline />
+        </Button>
+      </Button.Group>
     </div>
   )
 })

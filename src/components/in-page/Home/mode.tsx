@@ -4,8 +4,8 @@ import { observer } from 'mobx-react-lite';
 
 const Mode = () => {
   return (
-    <div>
-      <h1 className="font-ui text-4xl font-medium select-none">模式</h1>
+    <div className=''>
+      <h1 className="font-ui text-4xl font-medium select-none phone:text-2xl">模式</h1>
       <div className="mt-3">
         <ModeItem />
       </div>
@@ -16,9 +16,9 @@ const Mode = () => {
 const ModeItem = observer(() => {
   const { deviceStore } = useStore()
   return (
-    <div className="flex justify-between">
+    <div className="flex justify-between phone:gap-4">
       <div
-        className={`bg-white rounded-2xl h-22 w-70 p-2 flex items-center gap-3 shadow-xl cursor-pointer transition-opacity duration-300 ${
+        className={`bg-white rounded-2xl h-22 w-70 phone:w-full p-2 flex items-center gap-3 shadow-xl cursor-pointer transition-opacity duration-300 ${
           deviceStore.mode === 'leave' && 'opacity-40'
         }`}
         onClick={() => deviceStore.changeMode('home')}
@@ -28,7 +28,7 @@ const ModeItem = observer(() => {
       </div>
 
       <div
-        className={`bg-white rounded-2xl h-22 w-70 p-2 flex items-center gap-3 shadow-xl cursor-pointer transition-opacity duration-300
+        className={`bg-white rounded-2xl h-22 w-70 phone:w-full p-2 flex items-center gap-3 shadow-xl cursor-pointer transition-opacity duration-300
       ${deviceStore.mode === 'home' && 'opacity-40'}
       `}
         onClick={() => deviceStore.changeMode('leave')}

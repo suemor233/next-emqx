@@ -1,21 +1,24 @@
-import { findKey } from 'lodash-es'
-import { makeAutoObservable, reaction } from 'mobx'
+import { makeAutoObservable } from 'mobx'
 import type { MqttClient } from 'mqtt'
 import mqtt from 'mqtt'
+import message from 'react-message-popup'
 import { v4 as uuidv4 } from 'uuid'
 
 import { isClientSide } from '~/utils/env'
 
+import type {
+  DeviceMatchType,
+  DeviceType,
+  LinkageType,
+  SensorType} from './type';
 import {
   DEVICE,
   DEVICE_AGAINST,
   DeviceMatchSend,
-  DeviceMatchType,
-  DeviceType,
   LinkageMap,
-  SensorType,
+  MQTT,
+  esp32_JDQ,
 } from './type'
-import { MQTT, esp32_JDQ } from './type'
 
 export default class DeviceStore {
   device: Partial<DeviceType> = {
@@ -64,18 +67,20 @@ export default class DeviceStore {
   setInsterval
   mode = 'home'
 
-  linkage = {
-    sensor: '温度',
-    condition: '>',
-    value: {
-      inputValue: '',
-      gasValue: '安全',
-      humanValue: '无人',
+  linkage: LinkageType[] = [
+    {
+      sensor: '温度',
+      condition: '>',
+      value: {
+        inputValue: '',
+        gasValue: '安全',
+        humanValue: '无人',
+      },
+      state: '开',
+      device: '风扇',
+      launch: false,
     },
-    state: '开',
-    device: '风扇',
-    launch: false,
-  }
+  ]
 
   constructor() {
     makeAutoObservable(this)
@@ -125,6 +130,7 @@ export default class DeviceStore {
         name: item,
         status: this.device[item],
         icon: `/img/${item}.png`,
+        viewName: DEVICE[item],
       }),
     )
 
@@ -153,7 +159,8 @@ export default class DeviceStore {
 
   leaveHomeMode() {
     this.client?.publish(esp32_JDQ, '20')
-    this.linkage.launch = false
+    clearInterval(this.setInsterval)
+    this.linkage.forEach((item) => (item.launch = false))
     this.device.fan = false
     this.device.curtain = false
     this.device.humidifier = false
@@ -162,36 +169,68 @@ export default class DeviceStore {
     this.device.buzzer = false
   }
 
+  addLinkage() {
+    this.linkage.push({
+      sensor: '温度',
+      condition: '>',
+      value: {
+        inputValue: '',
+        gasValue: '安全',
+        humanValue: '无人',
+      },
+      state: '开',
+      device: '风扇',
+      launch: false,
+    })
+  }
+
+  reduceLinkage(index: number) {
+    if (this.linkage.length > 1) {
+      this.linkage.splice(index, 1)
+      clearInterval(this.setInsterval)
+      this.linkage.forEach((item) => (item.launch = false))
+    }else {
+      message.error('至少保留一个联动')
+    }
+  }
+
   startLinkage() {
     clearInterval(this.setInsterval)
     this.setInsterval = setInterval(() => {
-      const {
-        sensor,
-        condition,
-        value: { inputValue, gasValue, humanValue },
-        state,
-        device,
-        launch,
-      } = this.linkage
-      if (launch) {
-        const _sensor = this.sensor[LinkageMap[sensor]].value
-        const _device = DEVICE_AGAINST[device]
-        if (sensor === '人体红外' && _sensor === humanValue) {
-          this.controlDevice(_device, state)
-        } else if (sensor === '燃气' && _sensor === gasValue) {
-          this.controlDevice(_device, state)
-        } else if (condition === '>' && Number(_sensor) > Number(inputValue)) {
-          this.controlDevice(_device, state)
-        } else if (condition === '<' && Number(_sensor) < Number(inputValue)) {
-          this.controlDevice(_device, state)
+      this.linkage.map((item) => {
+        const {
+          sensor,
+          condition,
+          value: { inputValue, gasValue, humanValue },
+          state,
+          device,
+          launch,
+        } = item
+        if (launch) {
+          const _sensor = this.sensor[LinkageMap[sensor]].value
+          const _device = DEVICE_AGAINST[device]
+          if (sensor === '人体红外' && _sensor === humanValue) {
+            this.controlDevice(_device, state)
+          } else if (sensor === '燃气' && _sensor === gasValue) {
+            this.controlDevice(_device, state)
+          } else if (
+            condition === '>' &&
+            Number(_sensor) > Number(inputValue)
+          ) {
+            this.controlDevice(_device, state)
+          } else if (
+            condition === '<' &&
+            Number(_sensor) < Number(inputValue)
+          ) {
+            this.controlDevice(_device, state)
+          }
         }
-      } else {
-        clearInterval(this.setInsterval)
-      }
+      })
     }, 1000)
   }
 
   controlDevice(device: number, state: string) {
+    console.log(device, state)
     this.mode = 'home'
     this.client?.publish(
       esp32_JDQ,
@@ -200,6 +239,5 @@ export default class DeviceStore {
         : `${DeviceMatchSend[device] + 10}`,
     )
     this.device[device] = state === '开'
-    console.log('start')
   }
 }

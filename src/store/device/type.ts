@@ -2,15 +2,16 @@ export interface DeviceType {
   fan: boolean
   curtain: boolean
   humidifier: boolean
-  lamp: boolean,
+  lamp: boolean
   access: boolean
   buzzer: boolean
 }
 
 export interface DeviceMatchType {
-  name: string
-  status: boolean
-  icon: string
+  name?: string
+  status?: boolean
+  icon?: string
+  viewName?: string
 }
 
 export enum MQTT {
@@ -30,12 +31,12 @@ export const LinkageMap = {
 }
 
 export const DeviceMatchSend = {
-  fan:1,
-  curtain:2,
-  humidifier:3,
-  lamp:4,
-  access:5,
-  buzzer:6
+  fan: 1,
+  curtain: 2,
+  humidifier: 3,
+  lamp: 4,
+  access: 5,
+  buzzer: 6,
 }
 
 export const DEVICE = {
@@ -69,4 +70,17 @@ export interface SensorItemType {
   value: string
   img: string
   unit: string
+}
+
+export interface LinkageType {
+  sensor: string
+  condition: string
+  value: {
+    inputValue: string
+    gasValue: string
+    humanValue: string
+  }
+  state: string
+  device: string
+  launch: boolean
 }

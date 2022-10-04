@@ -10,9 +10,9 @@ const Sensor = observer(() => {
 
   return (
     <div>
-      <h1 className="font-ui text-4xl font-medium select-none">传感器</h1>
+      <h1 className="font-ui text-4xl font-medium select-none phone:text-2xl">传感器</h1>
       <div className="mt-3">
-        <div className="grid grid-cols-5 gap-5 phone:grid-cols-3">
+        <div className="grid grid-cols-5 gap-5 phone:grid-cols-2 w900:grid-cols-3">
           {Object.keys(deviceStore.sensor).map((key) => (
             <SensorItem
               key={key}
@@ -31,7 +31,7 @@ const Sensor = observer(() => {
 const SensorItem: FC<SensorItemType> = (props) => {
   const { name, value, img, unit } = props
   return (
-      <div className="bg-white rounded-2xl h-50 w-45 p-5 flex flex-col shadow-xl" >
+      <div className="bg-white rounded-2xl h-50 w-45 phone:h-40 phone:w-45 p-5 flex flex-col shadow-xl" >
         <img src={img} className="w-1/2 h-1/2" />
         <div className="flex flex-col whitespace-nowrap">
           <p className="text-black font-bold text-xl mt-2">{name}</p>
