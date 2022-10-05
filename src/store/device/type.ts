@@ -54,6 +54,7 @@ export const DEVICE_AGAINST = {
   加湿器: 'humidifier',
   射灯: 'lamp',
   门禁: 'access',
+  蜂鸣器: 'buzzer',
 }
 export const esp32_JDQ = 'esp32_switch'
 
