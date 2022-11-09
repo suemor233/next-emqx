@@ -19,7 +19,7 @@ const LoginView: NextPage = () => {
   const handleLogin = () => {
     if (
       loginForm.current.username === 'admin' &&
-      loginForm.current.password === '123456'
+      loginForm.current.password === '1234567'
     ) {
       message.success('登录成功')
       localStorage.setItem('smarthome-token', 'success')
@@ -33,7 +33,7 @@ const LoginView: NextPage = () => {
       router.push('/')
     }
   }, [])
-  console.log('start')
+
   return (
     <LoginLayout>
       <div className="flex justify-center">

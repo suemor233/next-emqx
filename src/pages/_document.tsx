@@ -18,9 +18,7 @@ class MyDocument extends Document {
         <Head>
           <meta charSet="UTF-8" />
           {CssBaseline.flush()}
-     
         </Head>
-
         <body>
           <Main />
           <NextScript />

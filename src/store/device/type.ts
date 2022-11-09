@@ -1,10 +1,15 @@
+export interface SubTopicType {
+  
+}
+
+
 export interface DeviceType {
-  fan: boolean
-  curtain: boolean
-  humidifier: boolean
-  lamp: boolean
-  access: boolean
-  buzzer: boolean
+  Fan: boolean
+  Curtain: boolean
+  Humidifier: boolean
+  Lamp: boolean
+  Access: boolean
+  Buzzer: boolean
 }
 
 export interface DeviceMatchType {
@@ -15,37 +20,28 @@ export interface DeviceMatchType {
 }
 
 export enum MQTT {
-  MQTT_PUB_TEMP = 'MQTT_PUB_TEMP',
-  MQTT_PUB_HUM = 'MQTT_PUB_HUM',
-  MQTT_PUB_MQ4 = 'MQTT_PUB_MQ4',
-  MQTT_PUB_Bh1750 = 'MQTT_PUB_Bh1750',
-  MQTT_PUB_HCSR501 = 'MQTT_PUB_HCSR501',
+  MQTT_PUB_TEMP = 'ESP32/DHT22/TEMP',
+  MQTT_PUB_HUM = 'ESP32/DHT22/HUMI',
+  MQTT_PUB_LUX = 'ESP32/BH1750',
+  MQTT_PUB_MQ4 = 'ESP32/MQ4',
+  MQTT_PUB_HCSR501 = 'ESP32/HCSR501',
 }
 
 export const LinkageMap = {
-  温度: 'MQTT_PUB_TEMP',
-  湿度: 'MQTT_PUB_HUM',
-  光照: 'MQTT_PUB_Bh1750',
-  燃气: 'MQTT_PUB_MQ4',
-  人体红外: 'MQTT_PUB_HCSR501',
-}
-
-export const DeviceMatchSend = {
-  fan: 1,
-  curtain: 2,
-  humidifier: 3,
-  lamp: 4,
-  access: 5,
-  buzzer: 6,
+  温度: MQTT.MQTT_PUB_TEMP,
+  湿度: MQTT.MQTT_PUB_HUM,
+  光照: MQTT.MQTT_PUB_LUX,
+  燃气: MQTT.MQTT_PUB_MQ4,
+  人体红外: MQTT.MQTT_PUB_HCSR501
 }
 
 export const DEVICE = {
-  fan: '风扇',
-  curtain: '窗帘',
-  humidifier: '加湿器',
-  lamp: '射灯',
-  access: '门禁',
-  buzzer: '蜂鸣器',
+  Fan: '风扇',
+  Curtain: '窗帘',
+  Humidifier: '加湿器',
+  Lamp: '射灯',
+  Access: '门禁',
+  Buzzer: '蜂鸣器',
 }
 
 export const DEVICE_AGAINST = {
@@ -56,7 +52,7 @@ export const DEVICE_AGAINST = {
   门禁: 'access',
   蜂鸣器: 'buzzer',
 }
-export const esp32_JDQ = 'esp32_switch'
+export const esp32_JDQ = 'ESP32/Switch'
 
 export interface SensorType {
   MQTT_PUB_TEMP: SensorItemType
