@@ -147,10 +147,11 @@ export default class DeviceStore {
   getDeviceName() {
     const deviceMatch: Partial<DeviceMatchType[]> = []
     Object.keys(this.device).map((item) =>
+
       deviceMatch.push({
         name: item,
         status: this.device[item],
-        icon: `/img/${item}.png`,
+        icon: `/img/${item.replace(item[0],item[0].toLowerCase())}.png`,
         viewName: DEVICE[item],
       }),
     )
@@ -219,7 +220,6 @@ export default class DeviceStore {
           launch,
         } = item
         if (launch) {
-          console.log(this.sensorMap.get(LinkageMap[sensor]))
           const _sensor = this.sensorMap.get(LinkageMap[sensor]).value
           const _device = DEVICE_AGAINST[device]
           if (sensor === '人体红外' && _sensor === humanValue) {
@@ -249,7 +249,6 @@ export default class DeviceStore {
 
     this.mode = 'home'
     if (this.device[upperCaseDevice] != (state === '开' ? true : false)) {
-      console.log(upperCaseDevice, state)
       this.client?.publish(
         esp32_JDQ,
         state === '开' ? `${upperCaseDevice}_Open` : `${upperCaseDevice}_Close`,
