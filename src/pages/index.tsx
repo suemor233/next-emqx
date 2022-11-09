@@ -15,6 +15,7 @@ const Home: NextPage = () => {
       router.push('/login')
     }
   }, [])
+  
   return (
     <HomeLayout>
       <DeviceControl />
