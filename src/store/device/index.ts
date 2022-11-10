@@ -100,12 +100,7 @@ export default class DeviceStore {
       clientId: uuidv4(),
       path: '/mqtt',
     })
-    this.client?.publish(
-      esp32_JDQ,
-      'Ui_State',
-      { qos: 1 },
-    )
-
+    this.client?.publish(esp32_JDQ, 'Ui_State', { qos: 1 })
   }
 
   subscribe() {
@@ -147,11 +142,10 @@ export default class DeviceStore {
   getDeviceName() {
     const deviceMatch: Partial<DeviceMatchType[]> = []
     Object.keys(this.device).map((item) =>
-
       deviceMatch.push({
         name: item,
         status: this.device[item],
-        icon: `/img/${item.replace(item[0],item[0].toLowerCase())}.png`,
+        icon: `/img/${item.replace(item[0], item[0].toLowerCase())}.png`,
         viewName: DEVICE[item],
       }),
     )
@@ -252,6 +246,7 @@ export default class DeviceStore {
       this.client?.publish(
         esp32_JDQ,
         state === '开' ? `${upperCaseDevice}_Open` : `${upperCaseDevice}_Close`,
+        { qos: 1 },
       )
     }
   }
