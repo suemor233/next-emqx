@@ -126,6 +126,9 @@ export default class DeviceStore {
           this.device[
             payload.topic.split('/')[payload.topic.split('/').length - 1]
           ] = payload.message.includes('Open') ? true : false
+          if (payload.message.includes('Close')) {
+            this.mode = 'home'
+          }
         }
       })
 

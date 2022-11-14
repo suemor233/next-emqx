@@ -15,6 +15,7 @@ const Mode = () => {
 
 const ModeItem = observer(() => {
   const { deviceStore } = useStore()
+
   return (
     <div className="flex justify-between phone:gap-4">
       <div
